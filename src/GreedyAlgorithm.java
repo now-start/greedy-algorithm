@@ -27,29 +27,50 @@ public class GreedyAlgorithm {
                 globalItems.add(item);
             }
         }
-        long st = System.currentTimeMillis();
+        double st = System.currentTimeMillis();
         for (int i = 0; i < people; i++) {
             Item item = new Item("", 0);
             peopleItems.add(item);
         }
-        Collections.sort(globalItems);
-        DFS(0);
-        result.stream().map(item -> "item = " + item.toString() + "\n").forEach(System.out::println);
-        sc.close();
-        System.out.println((System.currentTimeMillis() - st) / 1000);
+
+        // start
+        Greedy();
+        DFS((globalItems.size()/people -1 ) * people);
+        result.stream().map(item -> "item = " + item.toString()).forEach(System.out::println);
+        // end
+        System.out.println("item.length = " + globalItems.size() +", globalMin = " + globalMin);
+        System.out.println((System.currentTimeMillis() - st) / 1000 + "초");
+    }
+
+    private static void Greedy() {
+        Collections.sort(globalItems, Collections.reverseOrder());
+        boolean flag = true;
+        for (int i = 0; i < globalItems.size() / people - 1; i++) {
+            for (int j = 0; j < people; j++) {
+                if (flag) {
+                    peopleItems.set(j, new Item(
+                            peopleItems.get(j).name + "|" + globalItems.get(j + (i * people)).name,
+                            peopleItems.get(j).price + globalItems.get(j + (i * people)).price));
+                } else {
+                    peopleItems.set(people - 1 - j, new Item(
+                            peopleItems.get(people - 1 - j).name + "|" + globalItems.get(j + (i * people)).name,
+                            peopleItems.get(people - 1 - j).price + globalItems.get(j + (i * people)).price));
+                }
+            }
+            flag = !flag;
+        }
     }
 
     public static void DFS(int n) {
         if (n == globalItems.size()) {
-                int temp = getMax() - getMin();
-                if (temp < globalMin) {
-                    globalMin = temp;
-                    copy(result, peopleItems);
-                }
+            int temp = getMax() - getMin();
+            if (temp < globalMin) {
+                globalMin = temp;
+                copy(result, peopleItems);
+            }
         } else {
             int loop = globalItems.size() - n + 1;
             for (int i = 0; i < (loop > people ? people : globalItems.size() - n + 1); i++) {
-//            for (int i = 0; i < people; i++) {
                 peopleItems.set(i, new Item(
                         peopleItems.get(i).name + "|" + globalItems.get(n).name,
                         peopleItems.get(i).price + globalItems.get(n).price));
