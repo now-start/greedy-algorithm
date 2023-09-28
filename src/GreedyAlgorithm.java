@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class GreedyAlgorithm {
 
@@ -10,6 +7,7 @@ public class GreedyAlgorithm {
     static int globalMin = 1000000000;
     static List<Item> peopleItems = new ArrayList<>();
     static List<Item> result = new ArrayList<>();
+    static Set<String> itemSet = new HashSet<>();
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -25,6 +23,7 @@ public class GreedyAlgorithm {
             for (int i = 1; i <= count; i++) {
                 Item item = new Item(name, price);
                 globalItems.add(item);
+                itemSet.add(name);
             }
         }
         double st = System.currentTimeMillis();
@@ -35,10 +34,25 @@ public class GreedyAlgorithm {
 
         // start
         Greedy();
-        DFS((globalItems.size()/people -1 ) * people);
-        result.stream().map(item -> "item = " + item.toString()).forEach(System.out::println);
+        DFS((globalItems.size() / people - 1) * people);
+
+        // print
+        for (int i = 0; i < result.size(); i++) {
+            String[] s = result.get(i).name.split("\\|");
+            System.out.println("people" + i + " {");
+            for (String value : itemSet) {
+                int count = 0;
+                for (int j = 0; j < s.length; j++) {
+                    if (value.equals(s[j])) {
+                        count++;
+                    }
+                }
+                System.out.println("\tname = " + value + ", count = " + count);
+            }
+            System.out.println("}" + ", price = " + result.get(i).price);
+        }
         // end
-        System.out.println("item.length = " + globalItems.size() +", globalMin = " + globalMin);
+        System.out.println("item.length = " + globalItems.size() + ", globalMin = " + globalMin);
         System.out.println((System.currentTimeMillis() - st) / 1000 + "초");
     }
 
